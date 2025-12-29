@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LegacyOfTheShatteredCrown", "LegacyOfTheShatteredCrown.csproj", "{DE226996-DC70-FD45-B690-4BF7297B2D9D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DE226996-DC70-FD45-B690-4BF7297B2D9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE226996-DC70-FD45-B690-4BF7297B2D9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE226996-DC70-FD45-B690-4BF7297B2D9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE226996-DC70-FD45-B690-4BF7297B2D9D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C4AEC65B-A038-479B-A29C-F305B8255828}
+	EndGlobalSection
+EndGlobal
