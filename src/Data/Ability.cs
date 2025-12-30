@@ -248,4 +248,68 @@ public class Ability
             power: 2
         );
     }
+
+    /// <summary>
+    /// Creates a Brace ability - defensive stance with counter-push.
+    /// </summary>
+    public static Ability Brace()
+    {
+        return new Ability(
+            name: "Brace",
+            description: "Brace for impact. Next attack against you is reduced and pushes attacker back.",
+            range: 0,
+            cooldown: 2,
+            targeting: TargetingType.Self,
+            effect: AbilityEffect.Buff,
+            power: 2
+        );
+    }
+
+    /// <summary>
+    /// Creates a Spear Thrust ability - attack with knockback.
+    /// </summary>
+    public static Ability SpearThrust()
+    {
+        return new Ability(
+            name: "Spear Thrust",
+            description: "A powerful thrust that pushes the enemy back 2 tiles.",
+            range: 1,
+            cooldown: 2,
+            targeting: TargetingType.SingleEnemy,
+            effect: AbilityEffect.Push,
+            power: 2
+        );
+    }
+
+    /// <summary>
+    /// Creates a Trample ability - charge through enemies.
+    /// </summary>
+    public static Ability Trample()
+    {
+        return new Ability(
+            name: "Trample",
+            description: "Charge in a line, damaging and pushing all enemies in path.",
+            range: 4,
+            cooldown: 3,
+            targeting: TargetingType.Line,
+            effect: AbilityEffect.Damage,
+            power: 3
+        );
+    }
+
+    /// <summary>
+    /// Creates a Lance Strike ability - powerful single-target attack.
+    /// </summary>
+    public static Ability LanceStrike()
+    {
+        return new Ability(
+            name: "Lance Strike",
+            description: "A devastating lance attack dealing heavy damage.",
+            range: 2,
+            cooldown: 2,
+            targeting: TargetingType.SingleEnemy,
+            effect: AbilityEffect.Damage,
+            power: 6
+        );
+    }
 }
