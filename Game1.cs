@@ -61,30 +61,52 @@ public class Game1 : Game
         // Initialize input
         _inputManager = new InputManager();
 
-        // Create placeholder units for testing
-        _units = CreateTestUnits();
+        // Create hero units using definitions
+        _units = CreateHeroUnits();
 
         // Initialize selection system
         _selectionManager = new SelectionManager(_units);
     }
 
     /// <summary>
-    /// Creates a set of test units for Milestone 1 demonstration.
+    /// Creates hero units using HeroDefinition templates.
     /// Three player heroes and two enemy units.
     /// </summary>
-    private List<Unit> CreateTestUnits()
+    private List<Unit> CreateHeroUnits()
     {
-        return new List<Unit>
-        {
-            // Player heroes (blue team, left side)
-            new Unit("Knight", new Point(1, 3), moveRange: 3, new Color(70, 130, 200), isPlayerUnit: true),
-            new Unit("Archer", new Point(0, 4), moveRange: 2, new Color(100, 180, 100), isPlayerUnit: true),
-            new Unit("Mage", new Point(1, 5), moveRange: 2, new Color(180, 100, 180), isPlayerUnit: true),
+        var units = new List<Unit>();
 
-            // Enemy units (red team, right side) - not selectable for now
-            new Unit("Orc", new Point(6, 2), moveRange: 2, new Color(200, 80, 80), isPlayerUnit: false),
-            new Unit("Goblin", new Point(6, 5), moveRange: 3, new Color(180, 120, 60), isPlayerUnit: false)
-        };
+        // Player heroes (using HeroDefinitions)
+        units.Add(HeroDefinition.SirAldric().CreateUnit(new Point(1, 3)));
+        units.Add(HeroDefinition.LyraSwiftbow().CreateUnit(new Point(0, 4)));
+        units.Add(HeroDefinition.MiraFlamecaller().CreateUnit(new Point(1, 5)));
+
+        // Enemy units (basic enemies for now)
+        units.Add(new Unit(
+            name: "Orc Warrior",
+            gridPosition: new Point(6, 2),
+            moveRange: 2,
+            color: new Color(200, 80, 80),
+            maxHP: 10,
+            attackRange: 1,
+            attackPower: 4,
+            defense: 1,
+            isPlayerUnit: false
+        ));
+
+        units.Add(new Unit(
+            name: "Goblin Scout",
+            gridPosition: new Point(6, 5),
+            moveRange: 3,
+            color: new Color(180, 120, 60),
+            maxHP: 6,
+            attackRange: 1,
+            attackPower: 2,
+            defense: 0,
+            isPlayerUnit: false
+        ));
+
+        return units;
     }
 
     protected override void Update(GameTime gameTime)
@@ -143,4 +165,3 @@ public class Game1 : Game
         base.UnloadContent();
     }
 }
-
