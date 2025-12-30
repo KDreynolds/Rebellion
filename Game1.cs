@@ -24,6 +24,7 @@ public class Game1 : Game
     // Screens
     private StartScreen _startScreen = null!;
     private HeroSelectionScreen _heroSelectionScreen = null!;
+    private OverworldMapScreen _overworldMapScreen = null!;
 
     // Battle Systems
     private InputManager _inputManager = null!;
@@ -36,6 +37,7 @@ public class Game1 : Game
     // Game state
     private List<Unit> _units = null!;
     private List<HeroDefinition> _selectedHeroes = null!;
+    private Province? _currentBattleProvince;
 
     // Screen settings
     private const int ScreenWidth = 720;
@@ -80,7 +82,10 @@ public class Game1 : Game
         _startScreen.OnPlayClicked += OnPlayClicked;
 
         _heroSelectionScreen = new HeroSelectionScreen(GraphicsDevice, _font, ScreenWidth, ScreenHeight);
-        _heroSelectionScreen.OnStartBattle += OnStartBattle;
+        _heroSelectionScreen.OnStartBattle += OnHeroesSelected;
+
+        _overworldMapScreen = new OverworldMapScreen(GraphicsDevice, _font, ScreenWidth, ScreenHeight);
+        _overworldMapScreen.OnBattleStart += OnBattleStart;
 
         // Initialize battle renderers (created once, reused)
         _gridRenderer = new GridRenderer(GraphicsDevice);
@@ -99,9 +104,15 @@ public class Game1 : Game
         _heroSelectionScreen.Reset();
     }
 
-    private void OnStartBattle(List<HeroDefinition> selectedHeroes)
+    private void OnHeroesSelected(List<HeroDefinition> selectedHeroes)
     {
         _selectedHeroes = selectedHeroes;
+        _currentState = GameState.OverworldMap;
+    }
+
+    private void OnBattleStart(Province province)
+    {
+        _currentBattleProvince = province;
         _currentState = GameState.Battle;
         InitializeBattle();
     }
@@ -117,45 +128,87 @@ public class Game1 : Game
             _units.Add(_selectedHeroes[i].CreateUnit(playerPositions[i]));
         }
 
-        // Add enemy units
-        _units.Add(new Unit(
-            name: "Orc Warrior",
-            gridPosition: new Point(6, 2),
-            moveRange: 2,
-            color: new Color(200, 80, 80),
-            maxHP: 10,
-            attackRange: 1,
-            attackPower: 4,
-            defense: 1,
-            isPlayerUnit: false
-        ));
-
-        _units.Add(new Unit(
-            name: "Goblin Scout",
-            gridPosition: new Point(6, 5),
-            moveRange: 3,
-            color: new Color(180, 120, 60),
-            maxHP: 6,
-            attackRange: 1,
-            attackPower: 2,
-            defense: 0,
-            isPlayerUnit: false
-        ));
-
-        _units.Add(new Unit(
-            name: "Orc Berserker",
-            gridPosition: new Point(7, 4),
-            moveRange: 2,
-            color: new Color(180, 60, 60),
-            maxHP: 12,
-            attackRange: 1,
-            attackPower: 5,
-            defense: 0,
-            isPlayerUnit: false
-        ));
+        // Determine enemy composition based on province difficulty
+        int difficulty = _currentBattleProvince?.Difficulty ?? 1;
+        SpawnEnemiesForDifficulty(difficulty);
 
         // Initialize selection system with new units
         _selectionManager = new SelectionManager(_units);
+    }
+
+    private void SpawnEnemiesForDifficulty(int difficulty)
+    {
+        // Base enemy positions
+        Point[] enemyPositions = { new Point(6, 2), new Point(6, 5), new Point(7, 4), new Point(7, 3), new Point(6, 4) };
+
+        // Difficulty 1: 2 weak enemies
+        // Difficulty 2: 3 medium enemies
+        // Difficulty 3: 3-4 strong enemies
+        // Difficulty 4+: 4+ tough enemies
+
+        int enemyCount = Math.Min(difficulty + 1, enemyPositions.Length);
+        float statMultiplier = 1.0f + (difficulty - 1) * 0.25f;
+
+        for (int i = 0; i < enemyCount; i++)
+        {
+            var (name, hp, atk, def, move, color) = GetEnemyTemplate(i, difficulty);
+
+            _units.Add(new Unit(
+                name: name,
+                gridPosition: enemyPositions[i],
+                moveRange: move,
+                color: color,
+                maxHP: (int)(hp * statMultiplier),
+                attackRange: 1,
+                attackPower: (int)(atk * statMultiplier),
+                defense: def,
+                isPlayerUnit: false
+            ));
+        }
+    }
+
+    private (string name, int hp, int atk, int def, int move, Color color) GetEnemyTemplate(int index, int difficulty)
+    {
+        // Rotate through enemy types
+        return (index % 4, difficulty) switch
+        {
+            (0, >= 4) => ("Orc Warlord", 16, 6, 2, 2, new Color(160, 40, 40)),
+            (0, _) => ("Orc Warrior", 10, 4, 1, 2, new Color(200, 80, 80)),
+            (1, >= 3) => ("Orc Archer", 8, 5, 0, 2, new Color(180, 100, 80)),
+            (1, _) => ("Goblin Scout", 6, 2, 0, 3, new Color(180, 120, 60)),
+            (2, >= 4) => ("Orc Champion", 14, 5, 1, 2, new Color(180, 60, 60)),
+            (2, _) => ("Orc Berserker", 12, 5, 0, 2, new Color(180, 60, 60)),
+            (3, _) => ("Goblin Shaman", 7, 3, 0, 2, new Color(120, 160, 80)),
+            _ => ("Orc Grunt", 8, 3, 0, 2, new Color(190, 90, 70))
+        };
+    }
+
+    private void CheckBattleEnd()
+    {
+        bool playerAlive = _units.Any(u => u.IsPlayerUnit && u.IsAlive);
+        bool enemyAlive = _units.Any(u => !u.IsPlayerUnit && u.IsAlive);
+
+        if (!enemyAlive && playerAlive)
+        {
+            // Victory!
+            OnBattleVictory();
+        }
+        else if (!playerAlive)
+        {
+            // Defeat - return to map (could show defeat screen)
+            _currentState = GameState.OverworldMap;
+            _currentBattleProvince = null;
+        }
+    }
+
+    private void OnBattleVictory()
+    {
+        if (_currentBattleProvince != null)
+        {
+            _overworldMapScreen.OnBattleWon(_currentBattleProvince.Id);
+            _currentBattleProvince = null;
+        }
+        _currentState = GameState.OverworldMap;
     }
 
     protected override void Update(GameTime gameTime)
@@ -176,6 +229,10 @@ public class Game1 : Game
                 _heroSelectionScreen.Update();
                 break;
 
+            case GameState.OverworldMap:
+                _overworldMapScreen.Update();
+                break;
+
             case GameState.Battle:
                 UpdateBattle();
                 break;
@@ -194,10 +251,14 @@ public class Game1 : Game
             case GameState.HeroSelection:
                 _currentState = GameState.StartScreen;
                 break;
-            case GameState.Battle:
-                // For now, return to hero selection
+            case GameState.OverworldMap:
                 _currentState = GameState.HeroSelection;
                 _heroSelectionScreen.Reset();
+                break;
+            case GameState.Battle:
+                // Return to overworld map (retreat from battle)
+                _currentState = GameState.OverworldMap;
+                _currentBattleProvince = null;
                 break;
         }
     }
@@ -219,6 +280,9 @@ public class Game1 : Game
         {
             _selectionManager.Deselect();
         }
+
+        // Check for battle end conditions
+        CheckBattleEnd();
     }
 
     protected override void Draw(GameTime gameTime)
@@ -236,6 +300,10 @@ public class Game1 : Game
 
             case GameState.HeroSelection:
                 _heroSelectionScreen.Draw(_spriteBatch);
+                break;
+
+            case GameState.OverworldMap:
+                _overworldMapScreen.Draw(_spriteBatch);
                 break;
 
             case GameState.Battle:
@@ -297,8 +365,18 @@ public class Game1 : Game
             }
         }
 
+        // Draw province name if in campaign battle
+        if (_currentBattleProvince != null)
+        {
+            string provinceInfo = $"Battle: {_currentBattleProvince.Name}";
+            var provinceSize = _font.MeasureString(provinceInfo);
+            _spriteBatch.DrawString(_font, provinceInfo,
+                new Vector2(ScreenWidth - provinceSize.X - 10, 10),
+                new Color(220, 180, 100));
+        }
+
         // Draw ESC hint
-        _spriteBatch.DrawString(_font, "ESC: Return to Hero Select",
+        _spriteBatch.DrawString(_font, "ESC: Return to Map",
             new Vector2(10, ScreenHeight - 30), new Color(100, 100, 110));
     }
 
@@ -306,6 +384,7 @@ public class Game1 : Game
     {
         _startScreen?.Dispose();
         _heroSelectionScreen?.Dispose();
+        _overworldMapScreen?.Dispose();
         _gridRenderer?.Dispose();
         _unitRenderer?.Dispose();
 

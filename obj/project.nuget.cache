@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "ZQztmognIGetIamEaUqLj/VOKrFoJzCVSWGB8GdlR7lg+wGihswExrgkNlA/9ONECIhu+csvlIE9n7YV93Iv7Q==",
+  "dgSpecHash": "i9EnveYzhYk=",
   "success": true,
-  "projectFilePath": "/home/frey/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj",
+  "projectFilePath": "/workspace/LegacyOfTheShatteredCrown.csproj",
   "expectedPackageFiles": [
-    "/home/frey/.nuget/packages/monogame.framework.desktopgl/3.8.1.303/monogame.framework.desktopgl.3.8.1.303.nupkg.sha512"
+    "/home/ubuntu/.nuget/packages/monogame.framework.desktopgl/3.8.1.303/monogame.framework.desktopgl.3.8.1.303.nupkg.sha512"
   ],
   "logs": []
 }
