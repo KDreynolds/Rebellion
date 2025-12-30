@@ -4,7 +4,7 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>/home/frey/Dev/Rebellion/Content/DefaultFont.spritefont</File>
+    <File>/workspace/Content/DefaultFont.spritefont</File>
   </SourceFiles>
   <DestFiles>
     <File xsi:nil="true" />

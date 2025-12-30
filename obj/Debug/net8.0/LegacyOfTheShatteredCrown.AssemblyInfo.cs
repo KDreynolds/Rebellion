@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LegacyOfTheShatteredCrown")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0ca88e572197b8d82be4ce04a34cbc67fd75caf3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9c5eca4dd824fb4959c9985256792dd9d96a8378")]
 [assembly: System.Reflection.AssemblyProductAttribute("LegacyOfTheShatteredCrown")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LegacyOfTheShatteredCrown")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

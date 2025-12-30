@@ -80,19 +80,19 @@
     ]
   },
   "packageFolders": {
-    "/home/frey/.nuget/packages/": {}
+    "/home/ubuntu/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/frey/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj",
+      "projectUniqueName": "/workspace/LegacyOfTheShatteredCrown.csproj",
       "projectName": "LegacyOfTheShatteredCrown",
-      "projectPath": "/home/frey/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj",
-      "packagesPath": "/home/frey/.nuget/packages/",
-      "outputPath": "/home/frey/Dev/Rebellion/obj/",
+      "projectPath": "/workspace/LegacyOfTheShatteredCrown.csproj",
+      "packagesPath": "/home/ubuntu/.nuget/packages/",
+      "outputPath": "/workspace/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/frey/.nuget/NuGet/NuGet.Config"
+        "/home/ubuntu/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
@@ -110,6 +110,11 @@
         "warnAsError": [
           "NU1605"
         ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
       }
     },
     "frameworks": {
@@ -137,7 +142,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.122/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/home/ubuntu/.dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

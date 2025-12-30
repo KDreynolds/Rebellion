@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>/home/frey/Dev/Rebellion/Content/DefaultFont.spritefont</SourceFile>
-  <SourceTime>2025-12-30T08:50:10.8399061-07:00</SourceTime>
-  <DestFile>/home/frey/Dev/Rebellion/Content/DefaultFont.xnb</DestFile>
-  <DestTime>2025-12-30T08:50:13.112947-07:00</DestTime>
+  <SourceFile>/workspace/Content/DefaultFont.spritefont</SourceFile>
+  <SourceTime>2025-12-30T18:45:01.1928651+00:00</SourceTime>
+  <DestFile>/workspace/Content/DefaultFont.xnb</DestFile>
+  <DestTime>2025-12-30T18:51:33.8190033+00:00</DestTime>
   <Importer>FontDescriptionImporter</Importer>
-  <ImporterTime>2025-10-20T08:25:32-06:00</ImporterTime>
+  <ImporterTime>2025-10-20T14:25:32+00:00</ImporterTime>
   <Processor>FontDescriptionProcessor</Processor>
-  <ProcessorTime>2025-10-20T08:25:32-06:00</ProcessorTime>
+  <ProcessorTime>2025-10-20T14:25:32+00:00</ProcessorTime>
   <Dependencies />
   <BuildAsset />
   <BuildOutput />
