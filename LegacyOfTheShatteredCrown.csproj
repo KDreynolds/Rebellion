@@ -16,5 +16,20 @@
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.1.303" />
   </ItemGroup>
 
+  <ItemGroup>
+    <MonoGameContentReference Include="Content\Content.mgcb" />
+  </ItemGroup>
+
+  <Target Name="BuildContent" BeforeTargets="Build">
+    <Exec Command="mgcb Content/Content.mgcb /platform:DesktopGL /quiet" WorkingDirectory="$(ProjectDir)" ContinueOnError="false" />
+  </Target>
+
+  <Target Name="CopyContent" AfterTargets="Build">
+    <ItemGroup>
+      <ContentFiles Include="Content\*.xnb" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ContentFiles)" DestinationFolder="$(OutputPath)Content" />
+  </Target>
+
 </Project>
 

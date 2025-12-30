@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/kylereynolds/Documents/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj": {}
+    "/home/frey/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj": {}
   },
   "projects": {
-    "/Users/kylereynolds/Documents/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj": {
+    "/home/frey/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/kylereynolds/Documents/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj",
+        "projectUniqueName": "/home/frey/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj",
         "projectName": "LegacyOfTheShatteredCrown",
-        "projectPath": "/Users/kylereynolds/Documents/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj",
-        "packagesPath": "/Users/kylereynolds/.nuget/packages/",
-        "outputPath": "/Users/kylereynolds/Documents/Dev/Rebellion/obj/",
+        "projectPath": "/home/frey/Dev/Rebellion/LegacyOfTheShatteredCrown.csproj",
+        "packagesPath": "/home/frey/.nuget/packages/",
+        "outputPath": "/home/frey/Dev/Rebellion/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/kylereynolds/.nuget/NuGet/NuGet.Config"
+          "/home/frey/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -32,13 +32,7 @@
           "warnAsError": [
             "NU1605"
           ]
-        },
-        "restoreAuditProperties": {
-          "enableAudit": "true",
-          "auditLevel": "low",
-          "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.100"
+        }
       },
       "frameworks": {
         "net8.0": {
@@ -65,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/8.0.122/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
