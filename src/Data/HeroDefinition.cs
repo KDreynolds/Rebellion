@@ -270,4 +270,74 @@ public class HeroDefinition
             }
         );
     }
+
+    /// <summary>
+    /// Captain Roderick - Spearman of House Astridon. Defensive line holder.
+    /// </summary>
+    public static HeroDefinition CaptainRoderick()
+    {
+        return new HeroDefinition(
+            id: "hero_roderick",
+            name: "Captain Roderick",
+            description: "A veteran spearman who holds the line against any foe.",
+            houseAffiliation: "House Astridon",
+            color: new Color(180, 160, 100),
+            baseMaxHP: 11,
+            baseMoveRange: 2,
+            baseAttackRange: 2,
+            baseAttackPower: 3,
+            baseDefense: 1,
+            basePushResistance: 2,
+            passiveTrait: PassiveTrait.Phalanx(),
+            abilityFactories: new List<Func<Ability>>
+            {
+                Ability.SpearThrust,
+                Ability.Brace
+            }
+        );
+    }
+
+    /// <summary>
+    /// Lady Elara - Cavalry of House Equitarn. High mobility striker.
+    /// </summary>
+    public static HeroDefinition LadyElara()
+    {
+        return new HeroDefinition(
+            id: "hero_elara",
+            name: "Lady Elara",
+            description: "A swift cavalry commander who strikes like lightning.",
+            houseAffiliation: "House Equitarn",
+            color: new Color(220, 180, 80),
+            baseMaxHP: 9,
+            baseMoveRange: 5,
+            baseAttackRange: 1,
+            baseAttackPower: 4,
+            baseDefense: 0,
+            basePushResistance: 0,
+            passiveTrait: PassiveTrait.Momentum(),
+            abilityFactories: new List<Func<Ability>>
+            {
+                Ability.Trample,
+                Ability.LanceStrike
+            }
+        );
+    }
+
+    /// <summary>
+    /// Returns a list of all available hero definitions.
+    /// </summary>
+    public static List<HeroDefinition> GetAllHeroes()
+    {
+        return new List<HeroDefinition>
+        {
+            SirAldric(),
+            LyraSwiftbow(),
+            MiraFlamecaller(),
+            BrotherTheron(),
+            KiraShadowblade(),
+            GorathUnyielding(),
+            CaptainRoderick(),
+            LadyElara()
+        };
+    }
 }
