@@ -19,6 +19,7 @@ public class GridRenderer
     private readonly Color _hoverColor = new(100, 100, 120, 180);
     private readonly Color _selectedColor = new(255, 200, 80, 200);
     private readonly Color _reachableColor = new(80, 180, 120, 150);
+    private readonly Color _attackableColor = new(200, 80, 80, 180);
 
     public GridRenderer(GraphicsDevice graphicsDevice)
     {
@@ -34,15 +35,25 @@ public class GridRenderer
         SpriteBatch spriteBatch,
         Point? hoveredTile,
         Point? selectedUnitPosition,
-        List<Point> reachableTiles)
+        List<Point> reachableTiles,
+        List<Point>? attackableTiles = null)
     {
         // Draw base grid tiles
         DrawGridTiles(spriteBatch);
 
-        // Draw reachable tile highlights
+        // Draw reachable tile highlights (movement)
         foreach (var tile in reachableTiles)
         {
             DrawTileHighlight(spriteBatch, tile, _reachableColor);
+        }
+
+        // Draw attackable tile highlights (enemies in range)
+        if (attackableTiles != null)
+        {
+            foreach (var tile in attackableTiles)
+            {
+                DrawTileHighlight(spriteBatch, tile, _attackableColor);
+            }
         }
 
         // Draw selected unit highlight
