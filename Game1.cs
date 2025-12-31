@@ -29,6 +29,12 @@ public class Game1 : Game
     // Battle Systems
     private InputManager _inputManager = null!;
     private SelectionManager _selectionManager = null!;
+    private CombatSystem _combatSystem = null!;
+    private TurnManager _turnManager = null!;
+    private EnemyAI _enemyAI = null!;
+
+    // Input tracking for turn end
+    private KeyboardState _previousKeyboardState;
 
     // Rendering
     private GridRenderer _gridRenderer = null!;
@@ -132,8 +138,30 @@ public class Game1 : Game
         int difficulty = _currentBattleProvince?.Difficulty ?? 1;
         SpawnEnemiesForDifficulty(difficulty);
 
-        // Initialize selection system with new units
+        // Initialize combat and turn systems
+        _combatSystem = new CombatSystem(_units);
+        _turnManager = new TurnManager(_units);
+        _enemyAI = new EnemyAI(_units, _combatSystem);
+
+        // Initialize selection system with new units and wire combat
         _selectionManager = new SelectionManager(_units);
+        _selectionManager.SetCombatSystem(_combatSystem);
+
+        // Subscribe to combat events
+        _selectionManager.OnUnitDefeated += OnUnitDefeated;
+        _enemyAI.OnEnemyAttack += OnEnemyAttack;
+    }
+
+    private void OnEnemyAttack(Unit attacker, Unit target, int damage)
+    {
+        // Could add visual feedback here later (damage numbers, flash, etc.)
+        _turnManager.RefreshUnitLists();
+    }
+
+    private void OnUnitDefeated(Unit unit)
+    {
+        // Refresh the turn manager's unit lists
+        _turnManager.RefreshUnitLists();
     }
 
     private void SpawnEnemiesForDifficulty(int difficulty)
@@ -265,24 +293,62 @@ public class Game1 : Game
 
     private void UpdateBattle()
     {
+        var currentKeyboardState = Keyboard.GetState();
+
         // Update input state
         _inputManager.Update();
 
-        // Handle tile clicks
-        var clickedTile = _inputManager.GetClickedTile();
-        if (clickedTile.HasValue)
+        // Handle player turn
+        if (_turnManager.IsPlayerTurn && !_turnManager.IsProcessing)
         {
-            _selectionManager.HandleTileClick(clickedTile.Value);
+            // Handle tile clicks
+            var clickedTile = _inputManager.GetClickedTile();
+            if (clickedTile.HasValue)
+            {
+                _selectionManager.HandleTileClick(clickedTile.Value);
+            }
+
+            // Right-click to deselect
+            if (_inputManager.RightClickPressed)
+            {
+                _selectionManager.Deselect();
+            }
+
+            // Space or Enter to end player turn
+            bool endTurnPressed = (currentKeyboardState.IsKeyDown(Keys.Space) && _previousKeyboardState.IsKeyUp(Keys.Space)) ||
+                                  (currentKeyboardState.IsKeyDown(Keys.Enter) && _previousKeyboardState.IsKeyUp(Keys.Enter));
+
+            if (endTurnPressed)
+            {
+                EndPlayerTurn();
+            }
         }
 
-        // Right-click to deselect
-        if (_inputManager.RightClickPressed)
+        // Handle enemy turn
+        if (_turnManager.IsEnemyTurn && _turnManager.IsProcessing)
         {
-            _selectionManager.Deselect();
+            ProcessEnemyTurn();
         }
+
+        _previousKeyboardState = currentKeyboardState;
 
         // Check for battle end conditions
         CheckBattleEnd();
+    }
+
+    private void EndPlayerTurn()
+    {
+        _selectionManager.Deselect();
+        _turnManager.EndTurn(); // Switches to enemy turn
+    }
+
+    private void ProcessEnemyTurn()
+    {
+        // Execute all enemy actions
+        _enemyAI.ExecuteEnemyTurn();
+
+        // Complete the enemy turn (switches back to player)
+        _turnManager.CompleteEnemyTurn();
     }
 
     protected override void Draw(GameTime gameTime)
@@ -318,16 +384,18 @@ public class Game1 : Game
 
     private void DrawBattle()
     {
-        // Draw the grid with highlights
+        // Draw the grid with highlights (movement and attack ranges)
         _gridRenderer.Draw(
             _spriteBatch,
             _inputManager.HoveredTile,
             _selectionManager.SelectedUnit?.GridPosition,
-            _selectionManager.ReachableTiles
+            _selectionManager.ReachableTiles,
+            _selectionManager.AttackableTiles
         );
 
-        // Draw all units
-        _unitRenderer.Draw(_spriteBatch, _units, _selectionManager.SelectedUnit);
+        // Draw all units (only alive ones)
+        var aliveUnits = _units.Where(u => u.IsAlive).ToList();
+        _unitRenderer.Draw(_spriteBatch, aliveUnits, _selectionManager.SelectedUnit);
 
         // Draw battle UI hints
         DrawBattleUI();
@@ -375,8 +443,16 @@ public class Game1 : Game
                 new Color(220, 180, 100));
         }
 
-        // Draw ESC hint
-        _spriteBatch.DrawString(_font, "ESC: Return to Map",
+        // Draw turn indicator
+        string turnText = _turnManager.IsPlayerTurn ? "YOUR TURN" : "ENEMY TURN";
+        var turnColor = _turnManager.IsPlayerTurn ? new Color(100, 200, 100) : new Color(200, 100, 100);
+        var turnSize = _font.MeasureString(turnText);
+        _spriteBatch.DrawString(_font, turnText,
+            new Vector2((ScreenWidth - turnSize.X) / 2, ScreenHeight - 55),
+            turnColor);
+
+        // Draw control hints
+        _spriteBatch.DrawString(_font, "SPACE: End Turn | ESC: Return to Map",
             new Vector2(10, ScreenHeight - 30), new Color(100, 100, 110));
     }
 
