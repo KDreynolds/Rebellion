@@ -93,22 +93,38 @@ This system provides deep buildcrafting.
 
 4.0 BATTLEFIELD SYSTEM
 
-Battlefield is an 8×8 grid.
+Battlefield supports dynamic sizes and non-rectangular shapes.
 
-4.1 Tile Types
-	•	Plains
-	•	Forest (harder to hit, movement slow)
-	•	Hill (push bonuses)
-	•	Hazard (collision damage)
-	•	Water / Mud / Ice (future variants)
+4.1 Tile Types (Implemented)
+	•	Plains - Standard terrain, no modifiers
+	•	Forest - Movement cost 2, +1 Defense when defending
+	•	Hill - Movement cost 1, +1 Attack when attacking from high ground
+	•	Hazard - Deals 2 damage to units at end of turn
+	•	Water - Impassable terrain, blocks movement
+	•	Mud - Movement cost 2, difficult terrain
+	•	Ice - Slippery terrain, extends push effects
+	•	Void - Off-map tiles, used to create non-rectangular shapes
 
-4.2 Movement
-	•	Hero moves a number of tiles equal to movement stat
-	•	Manhattan range
+4.2 Battlefield Shapes (Implemented)
+	•	Standard Battlefield - 10x8 open field with scattered terrain
+	•	Diamond Arena - 9x9 diamond shape with central hill
+	•	River Crossing - 10x8 with water river and bridge chokepoints
+	•	Corner Ruins - 10x8 L-shaped battlefield
+	•	Island Fortress - 11x9 with water moat and bridges
+	•	Mountain Pass - 12x7 narrow canyon corridor
+	•	Hexagon Arena - 10x8 hexagonal approximation
+
+Battlefields are selected based on province difficulty for variety.
+
+4.3 Movement
+	•	Hero has movement budget equal to movement stat
+	•	Uses flood-fill pathfinding accounting for terrain costs
+	•	Forest and Mud cost 2 movement points to enter
+	•	Water and Void tiles are impassable
 	•	Cannot move into occupied tiles
-	•	Cannot move off-map
+	•	Cannot move off-map or onto Void tiles
 
-4.3 Combat Flow
+4.4 Combat Flow
 
 Each turn:
 	1.	Select unit
@@ -119,7 +135,7 @@ Each turn:
 	6.	End turn
 	7.	Enemies act
 
-4.4 Push/Pull Mechanics
+4.5 Push/Pull Mechanics
 	•	Many abilities deal 1-tile displacement
 	•	Collision with units → damage
 	•	Collision with terrain → hazard effects
@@ -128,7 +144,7 @@ Each turn:
 
 This is the tactical “core identity.”
 
-4.5 Enemy Intent Telegraphs
+4.6 Enemy Intent Telegraphs
 
 Before enemy turn:
 	•	Their planned move or attack is shown
@@ -177,14 +193,15 @@ Overworld:
 7.1 Core Classes
 	•	Game1.cs – entrypoint
 	•	BattleState.cs – tactical state machine
-	•	Grid.cs – tile coordinate logic
-	•	GridRenderer.cs – drawing for board
+	•	Grid.cs – tile coordinate logic and terrain-aware pathfinding
+	•	GridRenderer.cs – drawing for board with terrain visualization
 	•	Unit.cs – hero/enemy representation
 	•	UnitRenderer.cs
 	•	InputManager.cs – mouse handling
 	•	TurnManager.cs
 	•	AbilitySystem.cs
-	•	Terrain.cs
+	•	TerrainType.cs – terrain type enum with effect properties
+	•	Battlefield.cs – battlefield data with shape and terrain layout
 
 7.2 Rendering
 	•	Immediate mode rendering with SpriteBatch

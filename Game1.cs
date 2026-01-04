@@ -44,6 +44,8 @@ public class Game1 : Game
     private List<Unit> _units = null!;
     private List<HeroDefinition> _selectedHeroes = null!;
     private Province? _currentBattleProvince;
+    private Battlefield? _currentBattlefield;
+    private readonly Random _random = new();
 
     // Screen settings
     private const int ScreenWidth = 720;
@@ -127,16 +129,25 @@ public class Game1 : Game
     {
         _units = new List<Unit>();
 
+        // Determine difficulty and create appropriate battlefield
+        int difficulty = _currentBattleProvince?.Difficulty ?? 1;
+        _currentBattlefield = Battlefield.CreateBattlefieldForDifficulty(difficulty, _random);
+
+        // Set the battlefield in Grid for coordinate calculations
+        Grid.CurrentBattlefield = _currentBattlefield;
+
+        // Get valid spawn positions from battlefield
+        var playerSpawns = _currentBattlefield.GetPlayerSpawnPositions();
+        var enemySpawns = _currentBattlefield.GetEnemySpawnPositions();
+
         // Create player heroes from selection
-        Point[] playerPositions = { new Point(1, 3), new Point(0, 4), new Point(1, 5) };
-        for (int i = 0; i < _selectedHeroes.Count && i < playerPositions.Length; i++)
+        for (int i = 0; i < _selectedHeroes.Count && i < playerSpawns.Count; i++)
         {
-            _units.Add(_selectedHeroes[i].CreateUnit(playerPositions[i]));
+            _units.Add(_selectedHeroes[i].CreateUnit(playerSpawns[i]));
         }
 
-        // Determine enemy composition based on province difficulty
-        int difficulty = _currentBattleProvince?.Difficulty ?? 1;
-        SpawnEnemiesForDifficulty(difficulty);
+        // Spawn enemies based on difficulty
+        SpawnEnemiesForDifficulty(difficulty, enemySpawns);
 
         // Initialize combat and turn systems
         _combatSystem = new CombatSystem(_units);
@@ -164,18 +175,21 @@ public class Game1 : Game
         _turnManager.RefreshUnitLists();
     }
 
-    private void SpawnEnemiesForDifficulty(int difficulty)
+    private void SpawnEnemiesForDifficulty(int difficulty, List<Point> availableSpawns)
     {
-        // Base enemy positions
-        Point[] enemyPositions = { new Point(6, 2), new Point(6, 5), new Point(7, 4), new Point(7, 3), new Point(6, 4) };
+        if (availableSpawns.Count == 0) return;
 
         // Difficulty 1: 2 weak enemies
         // Difficulty 2: 3 medium enemies
         // Difficulty 3: 3-4 strong enemies
         // Difficulty 4+: 4+ tough enemies
 
-        int enemyCount = Math.Min(difficulty + 1, enemyPositions.Length);
+        int enemyCount = Math.Min(difficulty + 1, availableSpawns.Count);
+        enemyCount = Math.Min(enemyCount, 5); // Cap at 5 enemies
         float statMultiplier = 1.0f + (difficulty - 1) * 0.25f;
+
+        // Shuffle spawn positions for variety
+        var shuffledSpawns = availableSpawns.OrderBy(_ => _random.Next()).Take(enemyCount).ToList();
 
         for (int i = 0; i < enemyCount; i++)
         {
@@ -183,7 +197,7 @@ public class Game1 : Game
 
             _units.Add(new Unit(
                 name: name,
-                gridPosition: enemyPositions[i],
+                gridPosition: shuffledSpawns[i],
                 moveRange: move,
                 color: color,
                 maxHP: (int)(hp * statMultiplier),
@@ -433,14 +447,29 @@ public class Game1 : Game
             }
         }
 
-        // Draw province name if in campaign battle
+        // Draw battlefield name and province info
+        string battlefieldInfo = _currentBattlefield?.Name ?? "Battlefield";
         if (_currentBattleProvince != null)
         {
-            string provinceInfo = $"Battle: {_currentBattleProvince.Name}";
-            var provinceSize = _font.MeasureString(provinceInfo);
-            _spriteBatch.DrawString(_font, provinceInfo,
-                new Vector2(ScreenWidth - provinceSize.X - 10, 10),
-                new Color(220, 180, 100));
+            battlefieldInfo = $"{_currentBattleProvince.Name} - {battlefieldInfo}";
+        }
+        var battlefieldSize = _font.MeasureString(battlefieldInfo);
+        _spriteBatch.DrawString(_font, battlefieldInfo,
+            new Vector2(ScreenWidth - battlefieldSize.X - 10, 10),
+            new Color(220, 180, 100));
+
+        // Draw terrain info for hovered tile
+        if (_inputManager.HoveredTile.HasValue && Grid.IsValidPosition(_inputManager.HoveredTile.Value))
+        {
+            var terrain = Grid.GetTerrain(_inputManager.HoveredTile.Value);
+            string terrainName = terrain.GetDisplayName();
+            if (!string.IsNullOrEmpty(terrainName))
+            {
+                var terrainSize = _font.MeasureString(terrainName);
+                _spriteBatch.DrawString(_font, terrainName,
+                    new Vector2(ScreenWidth - terrainSize.X - 10, 32),
+                    new Color(180, 180, 160));
+            }
         }
 
         // Draw turn indicator
