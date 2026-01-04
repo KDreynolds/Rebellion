@@ -117,6 +117,7 @@ public class CombatSystem
 
     /// <summary>
     /// Calculates damage from an attack.
+    /// Accounts for terrain bonuses (attacker's Hill bonus, defender's Forest cover).
     /// </summary>
     /// <param name="attacker">The attacking unit.</param>
     /// <param name="target">The target unit.</param>
@@ -125,8 +126,16 @@ public class CombatSystem
     {
         int baseDamage = attacker.AttackPower;
 
+        // Apply terrain attack bonus (e.g., Hill gives +1 attack)
+        var attackerTerrain = Grid.GetTerrain(attacker.GridPosition);
+        baseDamage += attackerTerrain.GetAttackBonus();
+
+        // Calculate total defense including terrain
+        var targetTerrain = Grid.GetTerrain(target.GridPosition);
+        int totalDefense = target.Defense + targetTerrain.GetDefenseBonus();
+
         // Apply defense reduction (minimum 1 damage)
-        int damage = Math.Max(1, baseDamage - target.Defense);
+        int damage = Math.Max(1, baseDamage - totalDefense);
 
         // Future: Apply passive trait modifiers here
         // e.g., BerserkerRage bonus, Flanker bonus, etc.

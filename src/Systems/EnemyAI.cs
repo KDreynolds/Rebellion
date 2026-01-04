@@ -114,21 +114,11 @@ public class EnemyAI
 
     /// <summary>
     /// Gets all valid movement positions for a unit.
+    /// Uses terrain-aware pathfinding.
     /// </summary>
     private List<Point> GetValidMoves(Unit unit)
     {
-        var moves = new List<Point>();
-        var tilesInRange = Grid.GetTilesInRange(unit.GridPosition, unit.MoveRange);
         var occupiedTiles = _units.Where(u => u.IsAlive).Select(u => u.GridPosition).ToHashSet();
-
-        foreach (var tile in tilesInRange)
-        {
-            if (!occupiedTiles.Contains(tile))
-            {
-                moves.Add(tile);
-            }
-        }
-
-        return moves;
+        return Grid.GetReachableTiles(unit.GridPosition, unit.MoveRange, occupiedTiles);
     }
 }

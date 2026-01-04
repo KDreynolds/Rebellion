@@ -172,7 +172,7 @@ public class SelectionManager
     private void MoveSelectedUnit(Point targetTile)
     {
         if (SelectedUnit == null) return;
-        if (!Grid.IsValidPosition(targetTile)) return;
+        if (!Grid.IsPassable(targetTile)) return;
         if (IsTileOccupied(targetTile)) return;
 
         // Update unit position
@@ -187,6 +187,7 @@ public class SelectionManager
 
     /// <summary>
     /// Calculates all tiles the selected unit can reach.
+    /// Uses terrain-aware pathfinding to account for movement costs.
     /// Excludes occupied tiles and the unit's current position.
     /// </summary>
     private void CalculateReachableTiles()
@@ -195,16 +196,12 @@ public class SelectionManager
 
         if (SelectedUnit == null) return;
 
-        var tilesInRange = Grid.GetTilesInRange(SelectedUnit.GridPosition, SelectedUnit.MoveRange);
-
-        foreach (var tile in tilesInRange)
-        {
-            // Only add unoccupied tiles
-            if (!IsTileOccupied(tile))
-            {
-                ReachableTiles.Add(tile);
-            }
-        }
+        // Use terrain-aware movement calculation
+        ReachableTiles = Grid.GetReachableTiles(
+            SelectedUnit.GridPosition,
+            SelectedUnit.MoveRange,
+            _occupiedTiles
+        );
     }
 
     /// <summary>
